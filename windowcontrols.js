@@ -49,7 +49,7 @@ class WindowControls {
   }
 
   static getCurrentMaxGap() {
-    const setting = game.settings.get('window-controls', 'organizedMinimize');
+    const setting = game.settings.get('window-controls-2', 'organizedMinimize');
     const sidebarGap = WindowControls.cssMinimizedSize * (setting === 'persistentTop' || setting === 'persistentBottom' ? 3 : 4);
     const boardSize = parseInt($("#board").css('width'));
     return boardSize - sidebarGap;
@@ -60,23 +60,23 @@ class WindowControls {
   }
 
   static persistPinned(app) {
-    const currentPersisted = game.user.getFlag("window-controls", "persisted-pinned-windows") ?? [];
+    const currentPersisted = game.user.getFlag("window-controls-2", "persisted-pinned-windows") ?? [];
     if (app.document?.id) {
       if (!currentPersisted.find(p => p.docId === app.document.id)) {
         currentPersisted.push({docId: app.document.id, docName: app.document.documentName, position: app.position});
-        game.user.setFlag("window-controls", "persisted-pinned-windows", currentPersisted);
+        game.user.setFlag("window-controls-2", "persisted-pinned-windows", currentPersisted);
       }
     } else if (app.tabName) {
       if (!currentPersisted.find(p => p.docId === app.tabName)) {
         currentPersisted.push({docId: app.tabName, docName: 'SidebarTab', position: app.position});
-        game.user.setFlag("window-controls", "persisted-pinned-windows", currentPersisted);
+        game.user.setFlag("window-controls-2", "persisted-pinned-windows", currentPersisted);
       }
     }
   }
 
   static unpersistPinned(app) {
-    const filtered = game.user.getFlag("window-controls", "persisted-pinned-windows")?.filter(a => (a.docId !== app.document?.id && a.docId !== app.tabName)) ?? [];
-    game.user.setFlag("window-controls", "persisted-pinned-windows", filtered);
+    const filtered = game.user.getFlag("window-controls-2", "persisted-pinned-windows")?.filter(a => (a.docId !== app.document?.id && a.docId !== app.tabName)) ?? [];
+    game.user.setFlag("window-controls-2", "persisted-pinned-windows", filtered);
   }
 
   static async persistRender(persisted, collection) {
@@ -112,7 +112,7 @@ class WindowControls {
         WindowControls.persistRenderMinimizeRetry(appDoc, true, position);
       } else {
         console.warn("Window Controls: Too slow to render persisted Windows... I give up!");
-        game.user.unsetFlag("window-controls", "persisted-pinned-windows");
+        game.user.unsetFlag("window-controls-2", "persisted-pinned-windows");
       }
     }, 1000)
   }
@@ -132,7 +132,7 @@ class WindowControls {
   }
 
   static positionMinimizeBar() {
-    const setting = game.settings.get('window-controls', 'organizedMinimize');
+    const setting = game.settings.get('window-controls-2', 'organizedMinimize');
     if (!['topBar', 'bottomBar'].includes(setting))
       return;
     const rootStyle = document.querySelector(':root').style;
@@ -165,7 +165,7 @@ class WindowControls {
   }
 
   static getTopPosition() {
-    const minimizedSetting = game.settings.get('window-controls', 'organizedMinimize');
+    const minimizedSetting = game.settings.get('window-controls-2', 'organizedMinimize');
     if (['bottomBar', 'bottom'].includes(minimizedSetting)) {
       let hotbarSetting;
       if (game.modules.get('minimal-ui')?.active)
@@ -193,7 +193,7 @@ class WindowControls {
   }
 
   static getLeftPosition(app) {
-    const minimizedSetting = game.settings.get('window-controls', 'organizedMinimize');
+    const minimizedSetting = game.settings.get('window-controls-2', 'organizedMinimize');
     const minGap = ['top', 'topBar'].includes(minimizedSetting) ? WindowControls.cssTopBarLeftStart + 10 : (minimizedSetting === 'persistentTop' || minimizedSetting === 'persistentBottom' ? WindowControls.cssTopBarPersistentLeftStart + 10 : WindowControls.cssBottomBarLeftStart + 10);
     const jumpGap = WindowControls.cssMinimizedSize + 10;
     const maxGap = WindowControls.getCurrentMaxGap();
@@ -216,7 +216,7 @@ class WindowControls {
   }
 
   static setMinimizedPosition(app) {
-    const setting = game.settings.get('window-controls', 'organizedMinimize');
+    const setting = game.settings.get('window-controls-2', 'organizedMinimize');
     const alreadyStashedWindow = WindowControls.appInStash(app?.appId);
     if (!alreadyStashedWindow && WindowControls.getOverflowedState()) return;
     const leftPos = WindowControls.getLeftPosition(app);
@@ -269,7 +269,7 @@ class WindowControls {
           .map(([pos, _]) => Number(pos))
           .concat(0)
       );
-      const setting = game.settings.get('window-controls', 'organizedMinimize');
+      const setting = game.settings.get('window-controls-2', 'organizedMinimize');
       const rootStyle = document.querySelector(':root').style;
       if (setting === 'topBar' || setting === 'persistentTop') {
         rootStyle.setProperty('--minibarw', maxPosition + 40 + 'px');
@@ -312,7 +312,7 @@ class WindowControls {
       header.addClass('minimized-pinned');
       app._pinned = true;
       app._closeBkp = app.close;
-      if (game.settings.get('window-controls', 'pinnedDoubleTapping') === false) {
+      if (game.settings.get('window-controls-2', 'pinnedDoubleTapping') === false) {
         app.close = async function () {
           if (!this._minimized) await this.minimize();
         };
@@ -334,7 +334,7 @@ class WindowControls {
       header.find(".close").hide();
       header.find(".entry-image").hide(); // Disallow switching journal modes - it is the safest approach to avoid dealing with close()
       header.find(".entry-text").hide();
-      if (game.settings.get('window-controls', 'rememberPinnedWindows') && app.targetApp === undefined) {
+      if (game.settings.get('window-controls-2', 'rememberPinnedWindows') && app.targetApp === undefined) {
         WindowControls.persistPinned(app);
       }
     } else if (app._pinned) {
@@ -351,7 +351,7 @@ class WindowControls {
       header.find(".entry-image").show();
       header.find(".entry-text").show();
       header.find(".close").show();
-      if (game.settings.get('window-controls', 'rememberPinnedWindows') && app.targetApp === undefined)
+      if (game.settings.get('window-controls-2', 'rememberPinnedWindows') && app.targetApp === undefined)
         WindowControls.unpersistPinned(app);
     }
   }
@@ -465,7 +465,7 @@ class WindowControls {
   }
 
   static initSettings() {
-    game.settings.register('window-controls', 'organizedMinimize', {
+    game.settings.register('window-controls-2', 'organizedMinimize', {
       name: game.i18n.localize("WindowControls.OrganizedMinimizeName"),
       hint: game.i18n.localize("WindowControls.OrganizedMinimizeHint"),
       scope: 'client',
@@ -483,7 +483,7 @@ class WindowControls {
       default: "topBar",
       onChange: WindowControls.debouncedReload
     });
-    game.settings.register('window-controls', 'minimizeButton', {
+    game.settings.register('window-controls-2', 'minimizeButton', {
       name: game.i18n.localize("WindowControls.MinimizeButtonName"),
       hint: game.i18n.localize("WindowControls.MinimizeButtonHint"),
       scope: 'world',
@@ -496,7 +496,7 @@ class WindowControls {
       default: "enabled",
       onChange: WindowControls.debouncedReload
     });
-    game.settings.register('window-controls', 'pinnedButton', {
+    game.settings.register('window-controls-2', 'pinnedButton', {
       name: game.i18n.localize("WindowControls.PinnedButtonName"),
       hint: game.i18n.localize("WindowControls.PinnedButtonHint"),
       scope: 'world',
@@ -509,7 +509,7 @@ class WindowControls {
       default: "enabled",
       onChange: WindowControls.debouncedReload
     });
-    game.settings.register('window-controls', 'maximizeButton', {
+    game.settings.register('window-controls-2', 'maximizeButton', {
       name: game.i18n.localize("WindowControls.MaximizeButtonName"),
       hint: game.i18n.localize("WindowControls.MaximizeButtonHint"),
       scope: 'world',
@@ -522,7 +522,7 @@ class WindowControls {
       default: "disabled",
       onChange: WindowControls.debouncedReload
     });
-    game.settings.register('window-controls', 'clickOutsideMinimize', {
+    game.settings.register('window-controls-2', 'clickOutsideMinimize', {
       name: game.i18n.localize("WindowControls.ClickOutsideMinimizeName"),
       hint: game.i18n.localize("WindowControls.ClickOutsideMinimizeHint"),
       scope: 'world',
@@ -531,7 +531,7 @@ class WindowControls {
       default: false,
       onChange: WindowControls.debouncedReload
     });
-    game.settings.register('window-controls', 'pinnedDoubleTapping', {
+    game.settings.register('window-controls-2', 'pinnedDoubleTapping', {
       name: game.i18n.localize("WindowControls.PinnedDoubleTappingName"),
       hint: game.i18n.localize("WindowControls.PinnedDoubleTappingHint"),
       scope: 'world',
@@ -539,7 +539,7 @@ class WindowControls {
       type: Boolean,
       default: true
     });
-    game.settings.register('window-controls', 'rememberPinnedWindows', {
+    game.settings.register('window-controls-2', 'rememberPinnedWindows', {
       name: game.i18n.localize("WindowControls.RememberPinnedName"),
       hint: game.i18n.localize("WindowControls.RememberPinnedHint"),
       scope: 'world',
@@ -547,10 +547,10 @@ class WindowControls {
       type: Boolean,
       default: false,
       onChange: () => {
-        game.user.unsetFlag("window-controls", "persisted-pinned-windows")
+        game.user.unsetFlag("window-controls-2", "persisted-pinned-windows")
       }
     });
-    game.settings.register('window-controls', 'taskbarColor', {
+    game.settings.register('window-controls-2', 'taskbarColor', {
       name: game.i18n.localize("WindowControls.TaskbarColorName"),
       hint: game.i18n.localize("WindowControls.TaskbarColorHint"),
       scope: 'world',
@@ -568,10 +568,10 @@ class WindowControls {
 
     Hooks.once('ready', async function () {
 
-      const settingOrganized = game.settings.get('window-controls', 'organizedMinimize');
+      const settingOrganized = game.settings.get('window-controls-2', 'organizedMinimize');
 
       if (settingOrganized === 'persistentTop' || settingOrganized === 'persistentBottom') {
-        libWrapper.register('window-controls', 'Application.prototype.minimize', function (wrapped, ...args) {
+        libWrapper.register('window-controls-2', 'Application.prototype.minimize', function (wrapped, ...args) {
           if (!this.element?.length || this.id === 'tokenizer-control') return wrapped(...args);
           const alreadyPersistedWindow = Object.values(ui.windows).find(w => w.targetApp?.appId === this.appId);
           if (alreadyPersistedWindow) {
@@ -588,7 +588,7 @@ class WindowControls {
             })
           }
         }, 'WRAPPER');
-        libWrapper.register('window-controls', 'Application.prototype.maximize', function (wrapped, ...args) {
+        libWrapper.register('window-controls-2', 'Application.prototype.maximize', function (wrapped, ...args) {
           if (this._sourceDummyPanelApp || this.id === 'tokenizer-control') {
             return wrapped(...args).then(() => {
               if (!this.element?.length) return;
@@ -604,7 +604,7 @@ class WindowControls {
             });
           }
         }, 'WRAPPER');
-        libWrapper.register('window-controls', 'Application.prototype.close', function (wrapped, ...args) {
+        libWrapper.register('window-controls-2', 'Application.prototype.close', function (wrapped, ...args) {
           if (!this.element?.length || this.id === 'tokenizer-control') return wrapped(...args);
           if (this._minimized && !this._sourceDummyPanelApp) {
             WindowControls.organizedClose(this, settingOrganized);
@@ -614,7 +614,7 @@ class WindowControls {
           });
         }, 'WRAPPER');
       } else if (settingOrganized !== 'disabled') {
-        libWrapper.register('window-controls', 'Application.prototype.minimize', function (wrapped, ...args) {
+        libWrapper.register('window-controls-2', 'Application.prototype.minimize', function (wrapped, ...args) {
           return wrapped(...args).then(() => {
             if (!this.element?.length) return;
             WindowControls.organizedMinimize(this, settingOrganized);
@@ -624,7 +624,7 @@ class WindowControls {
           })
         }, 'WRAPPER');
 
-        libWrapper.register('window-controls', 'Application.prototype.maximize', function (wrapped, ...args) {
+        libWrapper.register('window-controls-2', 'Application.prototype.maximize', function (wrapped, ...args) {
           if (!this.element?.length || !this._minimized) return wrapped(...args);
           WindowControls.organizedRestore(this, settingOrganized);
           return wrapped(...args).then(() => {
@@ -635,7 +635,7 @@ class WindowControls {
           });
         }, 'WRAPPER');
 
-        libWrapper.register('window-controls', 'Application.prototype.close', function (wrapped, ...args) {
+        libWrapper.register('window-controls-2', 'Application.prototype.close', function (wrapped, ...args) {
           if (!this.element?.length) return wrapped(...args);
           WindowControls.organizedClose(this, settingOrganized);
           return wrapped(...args).then(() => {
@@ -644,14 +644,14 @@ class WindowControls {
         }, 'WRAPPER');
       }
 
-      libWrapper.register('window-controls', 'Application.prototype._getHeaderButtons', function (wrapped, ...args) {
+      libWrapper.register('window-controls-2', 'Application.prototype._getHeaderButtons', function (wrapped, ...args) {
         let result = wrapped(...args);
         if (this.constructor.name === 'QuestTracker' || (game.modules.get('one-journal')?.active && this.constructor.name === 'JournalSheet') || this.constructor.name === 'ee') // yes, ee is Simple Calendar
           return result;
         const close = result.find(b => b.class === 'close');
         close.label = '';
         const newButtons = [];
-        const minimizeSetting = game.settings.get('window-controls', 'minimizeButton');
+        const minimizeSetting = game.settings.get('window-controls-2', 'minimizeButton');
         // Exception for Forien Quest Log - Is there any way of identifying such kind of windows?
         if (minimizeSetting === 'enabled') {
           const minimizeButton = {
@@ -674,7 +674,7 @@ class WindowControls {
           };
           newButtons.push(minimizeButton)
         }
-        const maximizeSetting = game.settings.get('window-controls', 'maximizeButton');
+        const maximizeSetting = game.settings.get('window-controls-2', 'maximizeButton');
         if (maximizeSetting === 'enabled' && this.options.resizable) {
           const maximizeButton = {
             label: "",
@@ -686,7 +686,7 @@ class WindowControls {
           }
           newButtons.push(maximizeButton)
         }
-        const pinnedSetting = game.settings.get('window-controls', 'pinnedButton');
+        const pinnedSetting = game.settings.get('window-controls-2', 'pinnedButton');
         if (pinnedSetting === 'enabled') {
           const pinButton = {
             label: "",
@@ -704,9 +704,9 @@ class WindowControls {
         return newButtons.concat(result)
       }, 'WRAPPER');
 
-      if (game.settings.get('window-controls', 'rememberPinnedWindows')) {
+      if (game.settings.get('window-controls-2', 'rememberPinnedWindows')) {
         try {
-          game.user.getFlag("window-controls", "persisted-pinned-windows")?.forEach(persisted => {
+          game.user.getFlag("window-controls-2", "persisted-pinned-windows")?.forEach(persisted => {
             switch (persisted.docName) {
               case "Actor": {
                 WindowControls.persistRender(persisted, game.actors);
@@ -732,7 +732,7 @@ class WindowControls {
           })
         } catch (error) {
           console.warn("Window Controls: Failed to load persisted pinned windows.\n" + error);
-          game.user.unsetFlag("window-controls", "persisted-pinned-windows");
+          game.user.unsetFlag("window-controls-2", "persisted-pinned-windows");
         }
       }
 
@@ -741,7 +741,7 @@ class WindowControls {
         WindowControls.refreshMinimizeBar();
       });
 
-      if (game.settings.get('window-controls', 'clickOutsideMinimize')) {
+      if (game.settings.get('window-controls-2', 'clickOutsideMinimize')) {
         $("#board").click(() => {
           if (canvas.tokens.controlled.length)
             return;
@@ -772,7 +772,7 @@ class WindowControls {
 }
 
 Hooks.once('setup', () => {
-  const settings = game.settings.get('window-controls', 'organizedMinimize');
+  const settings = game.settings.get('window-controls-2', 'organizedMinimize');
   if (settings === 'persistentTop') {
     const rootStyle = document.querySelector(':root').style;
     const top = 4;
@@ -782,14 +782,14 @@ Hooks.once('setup', () => {
     rootStyle.setProperty('--miniminh', `65vh`);
     rootStyle.setProperty('--minimaxh', `85vh`);
     rootStyle.setProperty('--minisidebaradj', `calc(100vh - ${10 + margin}px)`);
-    rootStyle.setProperty('--taskbarcolor', game.settings.get('window-controls', 'taskbarColor'));
+    rootStyle.setProperty('--taskbarcolor', game.settings.get('window-controls-2', 'taskbarColor'));
     const nonBackBody = $("body:not(.background)");
     nonBackBody.css('top', `${margin}px`);
     nonBackBody.css('height', `${dedHeight}%`);
     $("body").append('<section id="window-controls-persistent"></section>');
     $("#window-controls-persistent").css('top', '-40px');
     $("#window-controls-persistent").css('height', '40px');
-    libWrapper.register('window-controls', 'Application.prototype.setPosition', function (wrapped, ...args) {
+    libWrapper.register('window-controls-2', 'Application.prototype.setPosition', function (wrapped, ...args) {
       const expectedPosition = wrapped(...args);
       if (this.constructor.name !== 'WindowControlsPersistentDummy') {
         if (!expectedPosition || !this.element.length)
@@ -817,14 +817,14 @@ Hooks.once('setup', () => {
     rootStyle.setProperty('--miniminh', `65vh`);
     rootStyle.setProperty('--minimaxh', `85vh`);
     rootStyle.setProperty('--minisidebaradj', `calc(100vh - ${8 - margin}px)`);
-    rootStyle.setProperty('--taskbarcolor', game.settings.get('window-controls', 'taskbarColor'));
+    rootStyle.setProperty('--taskbarcolor', game.settings.get('window-controls-2', 'taskbarColor'));
     const nonBackBody = $("body:not(.background)");
     nonBackBody.css('top', `${margin}px`);
     nonBackBody.css('padding-top', `${-margin}px`);
     $("body").append('<section id="window-controls-persistent"></section>');
     $("#window-controls-persistent").css('bottom', '-40px');
     $("#window-controls-persistent").css('height', '40px');
-    libWrapper.register('window-controls', 'Application.prototype.setPosition', function (wrapped, ...args) {
+    libWrapper.register('window-controls-2', 'Application.prototype.setPosition', function (wrapped, ...args) {
       const expectedPosition = wrapped(...args);
       if (this.constructor.name === 'WindowControlsPersistentDummy') {
         setTimeout(() => {
@@ -883,7 +883,7 @@ Hooks.once('ready', () => {
     rootStyle.setProperty('--wcbordercolor', '#ff71003b');
   }
 
-  const settingOrganized = game.settings.get('window-controls', 'organizedMinimize');
+  const settingOrganized = game.settings.get('window-controls-2', 'organizedMinimize');
   if (settingOrganized === 'persistentTop' || settingOrganized === 'persistentBottom') {
     Hooks.on('renderSidebarTab', function (app) {
       if (app._original) // Avoids launching ghost applications on internal hooks
